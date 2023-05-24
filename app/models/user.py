@@ -15,4 +15,6 @@ class User(Base):
     organization_name = Column(String, nullable=True)
     organization_description = Column(String, nullable=True)
     organization_rating = Column(Float, nullable=True, default=-1)
-    posts = relationship("Post", back_populates="owner")
+    
+    problems = relationship("Problem", back_populates="owner")
+    collaborations = relationship("Collaboration", back_populates="owner")
