@@ -8,6 +8,9 @@ class UserBase(BaseModel):
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     is_superuser: bool = False
+    organization_name: Optional[str] = None
+    organization_description: Optional[str] = None
+    organization_rating: Optional[float] = None
 
 
 class UserCreate(UserBase):
