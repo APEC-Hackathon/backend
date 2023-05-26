@@ -18,3 +18,7 @@ class User(Base):
     
     problems = relationship("Problem", back_populates="owner")
     collaborations = relationship("Collaboration", back_populates="owner")
+
+    problembids = relationship("ProblemBid", back_populates="bidder")
+    collaborationbids = relationship("CollaborationBid", back_populates="bidder")
+    

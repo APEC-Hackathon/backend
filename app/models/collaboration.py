@@ -13,3 +13,13 @@ class Collaboration(Base):
 
     source_id = Column(Integer, ForeignKey("problem.id"))
     source = relationship("Problem", back_populates="alliances")
+    bids = relationship("CollaborationBid", back_populates="collaboration")
+
+
+class CollaborationBid(Base):
+    id = Column(Integer, primary_key=True, index=True)
+    collaboration_id = Column(Integer, ForeignKey("collaboration.id"))
+    collaboration = relationship("Collaboration", back_populates="bids")
+    bidder_id = Column(Integer, ForeignKey("user.id"))
+    bidder = relationship("User", back_populates="collaborationbids")
+    description = Column(String, nullable=True)
