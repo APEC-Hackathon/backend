@@ -110,3 +110,39 @@ def read_all_problems(
     )
     return problems
 
+@router.post('/{problem_id}/bid/', response_model=schemas.ProblemBid)
+def create_problem_bid(
+    *,
+    db: Session = Depends(deps.get_db),
+    problem_id: int,
+    problem_bid_in: schemas.ProblemBidCreate,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Create new ProblemBid.
+    """
+    problem = crud.problem.get(db=db, id=problem_id)
+    if not problem:
+        raise HTTPException(status_code=404, detail='Problem not found')
+    problem_bid = crud.problem_bid.create_with_bidder(
+        db=db, obj_in=problem_bid_in, bidder_id=current_user.id
+    )
+    return problem_bid
+
+
+@router.get('/{problem_id}/bid/', response_model=List[schemas.ProblemBid])
+def read_problem_bids(
+    problem_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Retrieve ProblemBids.
+    """
+    problem = crud.problem.get(db=db, id=problem_id)
+    if not problem:
+        raise HTTPException(status_code=404, detail='Problem not found')
+    problem_bids = crud.problem_bid.get_multi_by_problem(
+        db=db, problem_id=problem_id
+    )
+    return problem_bids

@@ -115,3 +115,40 @@ def read_all_collaborations(
     )
     return collaborations
 
+
+@router.post('/{collaboration_id}/bid/', response_model=schemas.CollaborationBid)
+def create_collaboration_bid(
+    *,
+    db: Session = Depends(deps.get_db),
+    collaboration_id: int,
+    collaboration_bid_in: schemas.CollaborationBidCreate,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Create new collaboration bid.
+    """
+    collaboration = crud.collaboration.get(db=db, id=collaboration_id)
+    if not collaboration:
+        raise HTTPException(status_code=404, detail='Collaboration not found')
+    collaboration_bid = crud.collaboration_bid.create_with_bidder(
+        db=db, obj_in=collaboration_bid_in, owner_id=current_user.id, collaboration_id=collaboration_id
+    )
+    return collaboration_bid
+
+
+@router.get('/{collaboration_id}/bid/', response_model=List[schemas.CollaborationBid])
+def read_collaboration_bids(
+    collaboration_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get collaboration bids.
+    """
+    collaboration = crud.collaboration.get(db=db, id=collaboration_id)
+    if not collaboration:
+        raise HTTPException(status_code=404, detail='Collaboration not found')
+    collaboration_bids = crud.collaboration_bid.get_multi_by_collaboration(
+        db=db, collaboration_id=collaboration_id
+    )
+    return collaboration_bids

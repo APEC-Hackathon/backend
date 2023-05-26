@@ -1,3 +1,3 @@
 from .user import User
-from .collaboration import Collaboration
-from .problem import Problem
+from .collaboration import Collaboration, CollaborationBid
+from .problem import Problem, ProblemBid
