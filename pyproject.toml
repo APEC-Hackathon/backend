@@ -18,6 +18,8 @@ passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 tenacity = "^8.2.2"
 pydantic = {extras = ["email"], version = "^1.10.7"}
 psycopg2-binary = "^2.9.6"
+transformers = "^4.29.2"
+sentencepiece = "^0.1.99"
 
 
 [build-system]
