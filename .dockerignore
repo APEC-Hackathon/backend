@@ -4,3 +4,4 @@ env
 .dockerignore
 Dockerfile
 .db 
+app/utils/artifacts/
