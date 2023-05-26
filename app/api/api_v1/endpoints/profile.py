@@ -52,3 +52,18 @@ def update_user_me(
         user_in.organization_description = organization_description
     user = crud.user.update(db, db_obj=current_user, obj_in=user_in)
     return user
+
+
+@router.get('/{user_id}', response_model=schemas.User)
+def read_user_by_id(
+    user_id: int,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> Any:
+    """
+    Get a specific user by id.
+    """
+    user = crud.user.get(db, id=user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail='User not found')
+    return user
