@@ -8,10 +8,12 @@ services:
       - data:/var/lib/postgresql/data/data
     environment:
       - PGDATA=/var/lib/postgresql/data/data
-      - POSTGRES_SERVER=db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=app
+      - POSTGRES_SERVER=${POSTGRES_SERVER}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    env_file:
+      - .env
   web:
     build: 
       context: .
@@ -20,5 +22,12 @@ services:
       - db
     ports:
       - "8000:8000"
+    environment:
+      - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+      - FIRST_SUPERUSER=${FIRST_SUPERUSER}
+      - FIRST_SUPERUSER_PASSWORD=${FIRST_SUPERUSER_PASSWORD}
+    env_file:
+      - .env
 volumes:
   data:
