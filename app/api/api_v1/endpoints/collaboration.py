@@ -19,6 +19,11 @@ def create_collaboration(
     """
     Create new collaboration.
     """
+    if collaboration_in.source_id is not None:
+        print('Yes')
+        source_problem = crud.problem.get(db=db, id=collaboration_in.source_id)
+        if not source_problem:
+            raise HTTPException(status_code=404, detail='Source problem not found')
     collaboration = crud.collaboration.create_with_owner(
         db=db, obj_in=collaboration_in, owner_id=current_user.id
     )
