@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 class MessageBase(BaseModel):
     content: Optional[str] = None
-    timestamp: Optional[datetime] = None
 
 
 class MessageCreate(MessageBase):
@@ -22,6 +21,7 @@ class MessageInDBBase(MessageBase):
     translated_content: Optional[str] = None
     sender_id: Optional[int] = None
     receiver_id: Optional[int] = None
+    timestamp: Optional[datetime] = None
 
     class Config:
         orm_mode = True

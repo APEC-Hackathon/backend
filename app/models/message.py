@@ -12,7 +12,7 @@ class Message(Base):
     translated_content = Column(String, nullable=True)
     sender_id = Column(Integer, ForeignKey("user.id"))
     receiver_id = Column(Integer, ForeignKey("user.id"))
-    timestamp = Column(DateTime, nullable=False, default=datetime.utcnow())
+    timestamp = Column(DateTime, nullable=False)
 
     sender = relationship("User", back_populates="sent_messages", foreign_keys=[sender_id])
     receiver = relationship("User", back_populates="received_messages", foreign_keys=[receiver_id])

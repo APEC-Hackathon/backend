@@ -13,14 +13,14 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
 
-    SQLALCHEMY_DATABASE_URI: str = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    # SQLALCHEMY_DATABASE_URI: str = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
-    FIRST_SUPERUSER: str = os.environ.get('FIRST_SUPERUSER')
-    FIRST_SUPERUSER_PASSWORD: str = os.environ.get('FIRST_SUPERUSER_PASSWORD')
+    # FIRST_SUPERUSER: str = os.environ.get('FIRST_SUPERUSER')
+    # FIRST_SUPERUSER_PASSWORD: str = os.environ.get('FIRST_SUPERUSER_PASSWORD')
 
-    # SQLALCHEMY_DATABASE_URI: str = 'postgresql://postgres:password@localhost:5432/app'
-    # FIRST_SUPERUSER: str = 'admin@example.com'
-    # FIRST_SUPERUSER_PASSWORD: str = 'password'
+    SQLALCHEMY_DATABASE_URI: str = 'postgresql://postgres:password@localhost:5432/app'
+    FIRST_SUPERUSER: str = 'admin@example.com'
+    FIRST_SUPERUSER_PASSWORD: str = 'password'
 
     class Config:
         case_sensitive = True

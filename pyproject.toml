@@ -20,6 +20,7 @@ pydantic = {extras = ["email"], version = "^1.10.7"}
 psycopg2-binary = "^2.9.6"
 transformers = "^4.29.2"
 sentencepiece = "^0.1.99"
+websocket = "^0.2.1"
 
 
 [build-system]

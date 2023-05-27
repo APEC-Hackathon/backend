@@ -61,3 +61,18 @@ def read_received_messages(
         db=db, sender_id=peer_id, receiver_id=current_user.id
     )
     return messages
+
+
+@router.get('/{peer_id}/received-latest', response_model=schemas.Message)
+def read_latest_received_message(
+    peer_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Retrieve messages.
+    """
+    message = crud.message.get_latest_by_sender_and_receiver(
+        db=db, sender_id=peer_id, receiver_id=current_user.id
+    )
+    return message

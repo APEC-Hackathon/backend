@@ -1,4 +1,5 @@
 from typing import List 
+from datetime import datetime
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -16,9 +17,11 @@ class CRUDMessage(CRUDBase[Message, MessageCreate, MessageUpdate]):
     ) -> Message:
         obj_in_data = jsonable_encoder(obj_in)
         receiver_prefered_language = db.query(User.prefered_language).filter(User.id == receiver_id).first()
-        print(receiver_prefered_language[0])
         translated_content = translate(obj_in_data['content'], receiver_prefered_language[0])
-        db_obj = self.model(**obj_in_data, sender_id=sender_id, receiver_id=receiver_id, translated_content=translated_content)
+        db_obj = self.model(
+            **obj_in_data, sender_id=sender_id, receiver_id=receiver_id, 
+            translated_content=translated_content, timestamp=datetime.utcnow()
+        )
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -34,6 +37,17 @@ class CRUDMessage(CRUDBase[Message, MessageCreate, MessageUpdate]):
             .offset(skip)
             .limit(limit)
             .all()
+        )
+    
+    def get_latest_received_message(
+        self, db: Session, *, receiver_id: int, sender_id: int
+    ) -> Message:
+        return (
+            db.query(self.model)
+            .filter(Message.receiver_id == receiver_id)
+            .filter(Message.sender_id == sender_id)
+            .order_by(Message.created_at.desc())
+            .first()
         )
 
 
