@@ -29,6 +29,7 @@ def update_user_me(
     organization_name: str = Body(None),
     organization_description: str = Body(None),
     prefered_language: str = Body(None),
+    country: str = Body(None),
     current_user: User = Depends(deps.get_current_user),
 ):
     """
@@ -53,6 +54,8 @@ def update_user_me(
         user_in.organization_description = organization_description
     if prefered_language is not None:
         user_in.prefered_language = prefered_language
+    if country is not None:
+        user_in.country = country
     user = crud.user.update(db, db_obj=current_user, obj_in=user_in)
     return user
 

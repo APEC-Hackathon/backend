@@ -24,6 +24,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             organization_name=obj_in.organization_name,
             organization_description=obj_in.organization_description,
             prefered_language=obj_in.prefered_language,
+            country=obj_in.country,
         )
         db.add(db_obj)
         db.commit()

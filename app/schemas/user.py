@@ -12,6 +12,7 @@ class UserBase(BaseModel):
     organization_name: Optional[str] = None
     organization_description: Optional[str] = None
     organization_rating: Optional[float] = None
+    country: Optional[str] = None
 
 
 class UserCreate(UserBase):
