@@ -22,3 +22,5 @@ class User(Base):
     problembids = relationship("ProblemBid", back_populates="bidder")
     collaborationbids = relationship("CollaborationBid", back_populates="bidder")
     
+    sent_messages = relationship("Message", back_populates="sender", foreign_keys="Message.sender_id")
+    received_messages = relationship("Message", back_populates="receiver", foreign_keys="Message.receiver_id")
