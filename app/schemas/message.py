@@ -19,6 +19,7 @@ class MessageUpdate(MessageBase):
 
 class MessageInDBBase(MessageBase):
     id: Optional[int] = None
+    translated_content: Optional[str] = None
     sender_id: Optional[int] = None
     receiver_id: Optional[int] = None
 

@@ -6,6 +6,7 @@ from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase
 from app.models.user import User 
 from app.schemas.user import UserCreate, UserUpdate
+from app.utils.languages import is_supported_language
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -13,6 +14,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return db.query(User).filter(User.email == email).first()
     
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
+        if obj_in.prefered_language is None or not is_supported_language(obj_in.prefered_language):
+            obj_in.prefered_language = "en"
         db_obj = User(
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
@@ -20,6 +23,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             is_superuser=obj_in.is_superuser,
             organization_name=obj_in.organization_name,
             organization_description=obj_in.organization_description,
+            prefered_language=obj_in.prefered_language,
         )
         db.add(db_obj)
         db.commit()

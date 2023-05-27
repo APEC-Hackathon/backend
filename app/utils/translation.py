@@ -24,6 +24,10 @@ def translate_text(text, source_lang, target_lang):
     return decoded_tokens[0]
 
 def translate(text, target_lang):
-    source_lang = classify_language(text)
-    translation = translate_text(text, source_lang, target_lang)
-    return translation
+    try: 
+        source_lang = classify_language(text)
+        translation = translate_text(text, source_lang, target_lang)
+        return translation
+    except Exception as e:
+        return text
+    
