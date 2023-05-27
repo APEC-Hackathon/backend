@@ -8,6 +8,7 @@ class UserBase(BaseModel):
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     is_superuser: bool = False
+    prefered_language: Optional[str] = None
     organization_name: Optional[str] = None
     organization_description: Optional[str] = None
     organization_rating: Optional[float] = None
@@ -20,6 +21,7 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     password: Optional[str] = None
+    prefered_language: Optional[str] = None
 
 
 class UserInDBBase(UserBase):
