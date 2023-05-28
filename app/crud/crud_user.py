@@ -14,7 +14,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return db.query(User).filter(User.email == email).first()
     
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
-        if obj_in.prefered_language is None or not is_supported_language(obj_in.prefered_language):
+        if obj_in.prefered_language is None or (not is_supported_language(obj_in.prefered_language)):
             obj_in.prefered_language = "en"
         db_obj = User(
             email=obj_in.email,
