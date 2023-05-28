@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, Integer, String, Float, CheckConstraint
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
-from app.utils.languages import is_supported_language
+from app.utils.languages import LANGUGAGE_MAP
 
 
 class User(Base):
@@ -30,5 +30,5 @@ class User(Base):
 
 
     __table_args__ = (
-        CheckConstraint(is_supported_language(prefered_language), name='prefered_language_check'),
+        CheckConstraint(prefered_language.in_(LANGUGAGE_MAP), name='prefered_language_check'),
     )
