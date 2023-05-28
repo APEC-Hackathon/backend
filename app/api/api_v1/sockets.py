@@ -16,6 +16,6 @@ async def websocket_endpoint(
     try:
         while websocket.application_state == WebSocketState.CONNECTED:
             data = await websocket.receive_text()
-            await manager.send_to_peer(data, peer_id)
+            await manager.send_to_peer(data, user_id, peer_id)
     except WebSocketDisconnect:
         manager.disconnect(user_id, peer_id)

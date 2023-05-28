@@ -23,12 +23,12 @@ class ConnectionManager:
         self.userid_to_websocket.pop((user_id, peer_id))
     
     def get_connected_peer_socket(self, user_id: int, peer_id: int) -> WebSocket:
-        if self.is_peer_connected(user_id, peer_id):
+        if (peer_id, user_id) in self.userid_to_websocket:
             return self.get_websocket(peer_id, user_id)
         return None 
 
-    async def send_to_peer(self, message: str, peer_id: int):
-        peer_socket = self.get_connected_peer_socket(peer_id)
+    async def send_to_peer(self, message: str, user_id, peer_id: int):
+        peer_socket = self.get_connected_peer_socket(user_id, peer_id)
         if peer_socket:
             await peer_socket.send_text(message)
 
