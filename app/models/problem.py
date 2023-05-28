@@ -14,14 +14,15 @@ class Problem(Base):
     image_url = Column(String, nullable=True)
 
     alliances = relationship("Collaboration", back_populates="source")
-    bids = relationship("ProblemBid", back_populates="problem")
+    bids = relationship("ProblemBid", back_populates="problem", foreign_keys='ProblemBid.problem_id')
+
     bid_winner_id = Column(Integer, ForeignKey("problembid.id"))
 
 
 class ProblemBid(Base):
     id = Column(Integer, primary_key=True, index=True)
     problem_id = Column(Integer, ForeignKey("problem.id"))
-    problem = relationship("Problem", back_populates="bids")
+    problem = relationship("Problem", back_populates="bids", foreign_keys=[problem_id])
     bidder_id = Column(Integer, ForeignKey("user.id"))
     bidder = relationship("User", back_populates="problembids")
     description = Column(String, nullable=True)

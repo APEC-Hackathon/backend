@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from fastapi import APIRouter, Depends, Body, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -73,3 +73,15 @@ def read_user_by_id(
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
     return user
+
+
+@router.get('/all/', response_model=List[schemas.User])
+def get_all_user(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get all users
+    """
+    users = crud.user.get_multi(db)
+    return [user for user in users if user.id != current_user.id and user.is_superuser == False]
