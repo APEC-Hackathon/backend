@@ -16,12 +16,13 @@ class ProblemCreate(ProblemBase):
 
 
 class ProblemUpdate(ProblemBase):
-    pass 
+    bid_winnder_id: Optional[int] = None
 
 
 class ProblemInDBBase(ProblemBase):
     id: Optional[int] = None
     owner_id: Optional[int] = None
+    bid_winner_id: Optional[int] = None
 
     class Config:
         orm_mode = True

@@ -15,6 +15,7 @@ class Problem(Base):
 
     alliances = relationship("Collaboration", back_populates="source")
     bids = relationship("ProblemBid", back_populates="problem")
+    bid_winner_id = Column(Integer, ForeignKey("problembid.id"))
 
 
 class ProblemBid(Base):

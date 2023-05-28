@@ -68,13 +68,19 @@ def update_my_Problem(
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Update a Problem.
+    Update a Problem (Can be used to choose the winner).
     """
     problem = crud.problem.get(db=db, id=problem_id)
     if not problem:
         raise HTTPException(status_code=404, detail='Problem not found')
     if not crud.user.is_superuser(current_user) and (problem.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
+    if problem_in.bid_winner_id is not None:
+        problem_bid_winner = crud.problem_bid.get(db=db, id=problem_in.bid_winner_id)
+        if not problem_bid_winner:
+            raise HTTPException(status_code=404, detail='ProblemBid not found')
+        if problem_bid_winner.problem_id != problem_id:
+            raise HTTPException(status_code=400, detail='ProblemBid is not for this Problem')
     problem = crud.problem.update(db=db, db_obj=problem, obj_in=problem_in)
     return problem
 

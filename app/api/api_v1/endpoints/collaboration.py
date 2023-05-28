@@ -118,107 +118,107 @@ def read_all_collaborations(
     return collaborations
 
 
-@router.post('/bid', response_model=schemas.CollaborationBid)
-def create_collaboration_bid(
+@router.post('/request', response_model=schemas.CollaborationRequest)
+def create_collaboration_request(
     *,
     db: Session = Depends(deps.get_db),
-    collaboration_bid_in: schemas.CollaborationBidCreate,
+    collaboration_request_in: schemas.CollaborationRequestCreate,
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Create new CollaborationBid.
+    Create new CollaborationRequest.
     """
     collaboration = crud.collaboration.get(
-        db=db, id=collaboration_bid_in.collaboration_id
+        db=db, id=collaboration_request_in.collaboration_id
     )
     if not collaboration:
         raise HTTPException(status_code=404, detail='Collaboration not found')
-    collaboration_bid = crud.collaboration_bid.create_with_bidder(
-        db=db, obj_in=collaboration_bid_in, owner_id=current_user.id, collaboration_id=collaboration_id
+    collaboration_request = crud.collaboration_request.create_with_requester(
+        db=db, obj_in=collaboration_request_in, owner_id=current_user.id,
     )
-    return collaboration_bid
+    return collaboration_request
 
 
-@router.get('/bid/{collaboration_bid_id}', response_model=schemas.CollaborationBid)
-def read_collaboration_bid_by_id(
-    collaboration_bid_id: int,
+@router.get('/request/{collaboration_request_id}', response_model=schemas.CollaborationRequest)
+def read_collaboration_request_by_id(
+    collaboration_request_id: int,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Get a CollaborationBid by ID.
+    Get a CollaborationRequest by ID.
     """
-    collaboration_bid = crud.collaboration_bid.get(db=db, id=collaboration_bid_id)
-    if not collaboration_bid:
-        raise HTTPException(status_code=404, detail='CollaborationBid not found')
-    return collaboration_bid
+    collaboration_request = crud.collaboration_request.get(db=db, id=collaboration_request_id)
+    if not collaboration_request:
+        raise HTTPException(status_code=404, detail='CollaborationRequest not found')
+    return collaboration_request
 
 
-@router.put('/bid/{collaboration_bid_id}', response_model=schemas.CollaborationBid)
-def update_my_collaboration_bid(
+@router.put('/request/{collaboration_request_id}', response_model=schemas.CollaborationRequest)
+def update_my_collaboration_request(
     *,
     db: Session = Depends(deps.get_db),
-    collaboration_bid_id: int,
-    collaboration_bid_in: schemas.CollaborationBidUpdate,
+    collaboration_request_id: int,
+    collaboration_request_in: schemas.CollaborationRequestUpdate,
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Update a CollaborationBid.
+    Update a CollaborationRequest.
     """
-    collaboration_bid = crud.collaboration_bid.get(db=db, id=collaboration_bid_id)
-    if not collaboration_bid:
-        raise HTTPException(status_code=404, detail='CollaborationBid not found')
-    if not crud.user.is_superuser(current_user) and (collaboration_bid.owner_id != current_user.id):
+    collaboration_request = crud.collaboration_request.get(db=db, id=collaboration_request_id)
+    if not collaboration_request:
+        raise HTTPException(status_code=404, detail='CollaborationRequest not found')
+    if not crud.user.is_superuser(current_user) and (collaboration_request.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
-    collaboration_bid = crud.collaboration_bid.update(db=db, db_obj=collaboration_bid, obj_in=collaboration_bid_in)
-    return collaboration_bid
+    collaboration_request = crud.collaboration_request.update(db=db, db_obj=collaboration_request, obj_in=collaboration_request_in)
+    return collaboration_request
 
 
-@router.delete('/bid/{collaboration_bid_id}', response_model=schemas.CollaborationBid)
-def delete_collaboration_bid(
+@router.delete('/request/{collaboration_request_id}', response_model=schemas.CollaborationRequest)
+def delete_collaboration_request(
     *,
     db: Session = Depends(deps.get_db),
-    collaboration_bid_id: int,
+    collaboration_request_id: int,
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Delete a CollaborationBid.
+    Delete a CollaborationRequest.
     """
-    collaboration_bid = crud.collaboration_bid.get(db=db, id=collaboration_bid_id)
-    if not collaboration_bid:
-        raise HTTPException(status_code=404, detail='CollaborationBid not found')
-    if not crud.user.is_superuser(current_user) and (collaboration_bid.owner_id != current_user.id):
+    collaboration_request = crud.collaboration_request.get(db=db, id=collaboration_request_id)
+    if not collaboration_request:
+        raise HTTPException(status_code=404, detail='CollaborationRequest not found')
+    if not crud.user.is_superuser(current_user) and (collaboration_request.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
-    collaboration_bid = crud.collaboration_bid.remove(db=db, id=collaboration_bid_id)
-    return collaboration_bid
+    collaboration_request = crud.collaboration_request.remove(db=db, id=collaboration_request_id)
+    return collaboration_request
 
 
-@router.get('/my-bids/', response_model=List[schemas.CollaborationBid])
-def read_my_collaboration_bids(
+@router.get('/my-requests/', response_model=List[schemas.CollaborationRequest])
+def read_my_collaboration_requests(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Retrieve my CollaborationBids.
+    Retrieve my CollaborationRequests.
     """
-    collaboration_bids = crud.collaboration_bid.get_multi_by_bidder(
+    collaboration_requests = crud.collaboration_request.get_multi_by_requester(
         db=db, owner_id=current_user.id, skip=skip, limit=limit
     )
-    return collaboration_bids
+    return collaboration_requests
 
 
-@router.get('/bids/{collaboration_id}', response_model=List[schemas.CollaborationBid])
-def read_collaboration_bids(
+@router.get('/requests/{collaboration_id}', response_model=List[schemas.CollaborationRequest])
+def read_collaboration_requests(
     collaboration_id: int,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Retrieve CollaborationBids for a Collaboration.
+    Retrieve CollaborationRequests for a Collaboration.
     """
-    collaboration_bids = crud.collaboration_bid.get_multi_by_collaboration(
+    collaboration_requests = crud.collaboration_request.get_multi_by_collaboration(
         db=db, collaboration_id=collaboration_id
     )
-    return collaboration_bids
+    return collaboration_requests

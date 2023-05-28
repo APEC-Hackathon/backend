@@ -21,10 +21,10 @@ class User(Base):
     organization_rating = Column(Float, nullable=True, default=-1)
     
     problems = relationship("Problem", back_populates="owner")
-    collaborations = relationship("Collaboration", back_populates="owner")
-
     problembids = relationship("ProblemBid", back_populates="bidder")
-    collaborationbids = relationship("CollaborationBid", back_populates="bidder")
+
+    collaborations = relationship("Collaboration", back_populates="owner")
+    collaborationrequets = relationship("CollaborationRequest", back_populates="requester")
     
     sent_messages = relationship("Message", back_populates="sender", foreign_keys="Message.sender_id")
     received_messages = relationship("Message", back_populates="receiver", foreign_keys="Message.receiver_id")

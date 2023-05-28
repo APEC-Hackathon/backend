@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -14,13 +14,18 @@ class Collaboration(Base):
 
     source_id = Column(Integer, ForeignKey("problem.id"))
     source = relationship("Problem", back_populates="alliances")
-    bids = relationship("CollaborationBid", back_populates="collaboration")
+    requests = relationship("CollaborationRequest", back_populates="collaboration")
 
 
-class CollaborationBid(Base):
+class CollaborationRequest(Base):
     id = Column(Integer, primary_key=True, index=True)
     collaboration_id = Column(Integer, ForeignKey("collaboration.id"))
-    collaboration = relationship("Collaboration", back_populates="bids")
-    bidder_id = Column(Integer, ForeignKey("user.id"))
-    bidder = relationship("User", back_populates="collaborationbids")
+    collaboration = relationship("Collaboration", back_populates="requests")
+    requester_id = Column(Integer, ForeignKey("user.id"))
+    requester = relationship("User", back_populates="collaborationrequets")
     description = Column(String, nullable=True)
+    status = Column(String, nullable=False, default="pending")
+
+    __table_args__ = (
+        CheckConstraint(status.in_(["pending", "accepted", "rejected"]), name='state_check'),
+    )
