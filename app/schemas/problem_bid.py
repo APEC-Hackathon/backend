@@ -8,7 +8,7 @@ class ProblemBidBase(BaseModel):
 
 
 class ProblemBidCreate(ProblemBidBase):
-    pass
+    problem_id: int = None
 
 
 class ProblemBidUpdate(ProblemBidBase):

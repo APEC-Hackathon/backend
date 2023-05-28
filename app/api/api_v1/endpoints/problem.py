@@ -70,12 +70,12 @@ def update_my_Problem(
     """
     Update a Problem.
     """
-    problem = crud.Problem.get(db=db, id=problem_id)
+    problem = crud.problem.get(db=db, id=problem_id)
     if not problem:
         raise HTTPException(status_code=404, detail='Problem not found')
     if not crud.user.is_superuser(current_user) and (problem.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
-    problem = crud.Problem.update(db=db, db_obj=problem, obj_in=problem_in)
+    problem = crud.problem.update(db=db, db_obj=problem, obj_in=problem_in)
     return problem
 
 
@@ -114,18 +114,17 @@ def read_all_problems(
     return problems
 
 
-@router.post('/{problem_id}/bid/', response_model=schemas.ProblemBid)
+@router.post('/bid', response_model=schemas.ProblemBid)
 def create_problem_bid(
     *,
     db: Session = Depends(deps.get_db),
-    problem_id: int,
     problem_bid_in: schemas.ProblemBidCreate,
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Create new ProblemBid.
     """
-    problem = crud.problem.get(db=db, id=problem_id)
+    problem = crud.problem.get(db=db, id=problem_bid_in.problem_id)
     if not problem:
         raise HTTPException(status_code=404, detail='Problem not found')
     problem_bid = crud.problem_bid.create_with_bidder(
@@ -134,14 +133,84 @@ def create_problem_bid(
     return problem_bid
 
 
-@router.get('/{problem_id}/bid/', response_model=List[schemas.ProblemBid])
-def read_problem_bids(
+@router.put('/bid/{problem_bid_id}', response_model=schemas.ProblemBid)
+def update_my_problem_bid(
+    *,
+    db: Session = Depends(deps.get_db),
+    problem_bid_id: int,
+    problem_bid_in: schemas.ProblemBidUpdate,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Update a ProblemBid.
+    """
+    problem_bid = crud.problem_bid.get(db=db, id=problem_bid_id)
+    if not problem_bid:
+        raise HTTPException(status_code=404, detail='ProblemBid not found')
+    if not crud.user.is_superuser(current_user) and (problem_bid.bidder_id != current_user.id):
+        raise HTTPException(status_code=400, detail='Not enough permissions')
+    problem_bid = crud.problem_bid.update(db=db, db_obj=problem_bid, obj_in=problem_bid_in)
+    return problem_bid
+
+
+@router.get('/bid/{problem_bid_id}', response_model=schemas.ProblemBid)
+def read_problem_bid_by_id(
+    problem_bid_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get a ProblemBid by ID.
+    """
+    problem_bid = crud.problem_bid.get(db=db, id=problem_bid_id)
+    if not problem_bid:
+        raise HTTPException(status_code=404, detail='ProblemBid not found')
+    return problem_bid
+
+
+@router.delete('/bid/{problem_bid_id}', response_model=schemas.ProblemBid)
+def delete_problem_bid(
+    *,
+    db: Session = Depends(deps.get_db),
+    problem_bid_id: int,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Delete a problem_bid.
+    """
+    problem_bid = crud.problem_bid.get(db=db, id=problem_bid_id)
+    if not problem_bid:
+        raise HTTPException(status_code=404, detail='ProblemBid not found')
+    if not crud.user.is_superuser(current_user) and (problem_bid.bidder_id != current_user.id):
+        raise HTTPException(status_code=400, detail='Not enough permissions')
+    problem_bid = crud.problem_bid.remove(db=db, id=problem_bid_id)
+    return problem_bid
+
+
+@router.get('/my-bids/', response_model=List[schemas.ProblemBid])
+def read_my_problem_bids(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Retrieve my ProblemBids.
+    """
+    problem_bids = crud.problem_bid.get_multi_by_bidder(
+        db=db, bidder_id=current_user.id, skip=skip, limit=limit
+    )
+    return problem_bids
+
+
+@router.get('/bids/{problem_id}', response_model=List[schemas.ProblemBid])
+def read_all_bids_for_a_problem(
     problem_id: int,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Retrieve ProblemBids.
+    Retrieve ProblemBids for a Problem.
     """
     problem = crud.problem.get(db=db, id=problem_id)
     if not problem:

@@ -8,7 +8,7 @@ class CollaborationBidBase(BaseModel):
 
 
 class CollaborationBidCreate(CollaborationBidBase):
-    pass
+    collaboration_id: int = None
 
 
 class CollaborationBidUpdate(CollaborationBidBase):

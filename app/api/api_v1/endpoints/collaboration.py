@@ -118,18 +118,19 @@ def read_all_collaborations(
     return collaborations
 
 
-@router.post('/{collaboration_id}/bid/', response_model=schemas.CollaborationBid)
+@router.post('/bid', response_model=schemas.CollaborationBid)
 def create_collaboration_bid(
     *,
     db: Session = Depends(deps.get_db),
-    collaboration_id: int,
     collaboration_bid_in: schemas.CollaborationBidCreate,
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Create new collaboration bid.
+    Create new CollaborationBid.
     """
-    collaboration = crud.collaboration.get(db=db, id=collaboration_id)
+    collaboration = crud.collaboration.get(
+        db=db, id=collaboration_bid_in.collaboration_id
+    )
     if not collaboration:
         raise HTTPException(status_code=404, detail='Collaboration not found')
     collaboration_bid = crud.collaboration_bid.create_with_bidder(
@@ -138,18 +139,85 @@ def create_collaboration_bid(
     return collaboration_bid
 
 
-@router.get('/{collaboration_id}/bid/', response_model=List[schemas.CollaborationBid])
+@router.get('/bid/{collaboration_bid_id}', response_model=schemas.CollaborationBid)
+def read_collaboration_bid_by_id(
+    collaboration_bid_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get a CollaborationBid by ID.
+    """
+    collaboration_bid = crud.collaboration_bid.get(db=db, id=collaboration_bid_id)
+    if not collaboration_bid:
+        raise HTTPException(status_code=404, detail='CollaborationBid not found')
+    return collaboration_bid
+
+
+@router.put('/bid/{collaboration_bid_id}', response_model=schemas.CollaborationBid)
+def update_my_collaboration_bid(
+    *,
+    db: Session = Depends(deps.get_db),
+    collaboration_bid_id: int,
+    collaboration_bid_in: schemas.CollaborationBidUpdate,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Update a CollaborationBid.
+    """
+    collaboration_bid = crud.collaboration_bid.get(db=db, id=collaboration_bid_id)
+    if not collaboration_bid:
+        raise HTTPException(status_code=404, detail='CollaborationBid not found')
+    if not crud.user.is_superuser(current_user) and (collaboration_bid.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail='Not enough permissions')
+    collaboration_bid = crud.collaboration_bid.update(db=db, db_obj=collaboration_bid, obj_in=collaboration_bid_in)
+    return collaboration_bid
+
+
+@router.delete('/bid/{collaboration_bid_id}', response_model=schemas.CollaborationBid)
+def delete_collaboration_bid(
+    *,
+    db: Session = Depends(deps.get_db),
+    collaboration_bid_id: int,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Delete a CollaborationBid.
+    """
+    collaboration_bid = crud.collaboration_bid.get(db=db, id=collaboration_bid_id)
+    if not collaboration_bid:
+        raise HTTPException(status_code=404, detail='CollaborationBid not found')
+    if not crud.user.is_superuser(current_user) and (collaboration_bid.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail='Not enough permissions')
+    collaboration_bid = crud.collaboration_bid.remove(db=db, id=collaboration_bid_id)
+    return collaboration_bid
+
+
+@router.get('/my-bids/', response_model=List[schemas.CollaborationBid])
+def read_my_collaboration_bids(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Retrieve my CollaborationBids.
+    """
+    collaboration_bids = crud.collaboration_bid.get_multi_by_bidder(
+        db=db, owner_id=current_user.id, skip=skip, limit=limit
+    )
+    return collaboration_bids
+
+
+@router.get('/bids/{collaboration_id}', response_model=List[schemas.CollaborationBid])
 def read_collaboration_bids(
     collaboration_id: int,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Get collaboration bids.
+    Retrieve CollaborationBids for a Collaboration.
     """
-    collaboration = crud.collaboration.get(db=db, id=collaboration_id)
-    if not collaboration:
-        raise HTTPException(status_code=404, detail='Collaboration not found')
     collaboration_bids = crud.collaboration_bid.get_multi_by_collaboration(
         db=db, collaboration_id=collaboration_id
     )
