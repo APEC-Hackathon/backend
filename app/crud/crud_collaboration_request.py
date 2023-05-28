@@ -41,5 +41,23 @@ class CRUDCollaborationBid(CRUDBase[CollaborationRequest, CollaborationRequestCr
             .all()
         )
     
+    def accept(
+        self, db: Session, *, collaboration_request_id: int
+    ) -> CollaborationRequest:
+        db_obj = db.query(self.model).filter(CollaborationRequest.id == collaboration_request_id).first()
+        db_obj.status = "accepted"
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+    
+    def reject(
+        self, db: Session, *, collaboration_request_id: int
+    ) -> CollaborationRequest:
+        db_obj = db.query(self.model).filter(CollaborationRequest.id == collaboration_request_id).first()
+        db_obj.status = "rejected"
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+    
 
 collaboration_request = CRUDCollaborationBid(CollaborationRequest)

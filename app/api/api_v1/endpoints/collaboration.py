@@ -222,3 +222,43 @@ def read_collaboration_requests(
         db=db, collaboration_id=collaboration_id
     )
     return collaboration_requests
+
+
+@router.put('/request/{collaboration_request_id}/accept', response_model=schemas.CollaborationRequest)
+def accept_collaboration_request(
+    *,
+    db: Session = Depends(deps.get_db),
+    collaboration_request_id: int,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Accept a CollaborationRequest.
+    """
+    collaboration_request = crud.collaboration_request.get(db=db, id=collaboration_request_id)
+    if not collaboration_request:
+        raise HTTPException(status_code=404, detail='CollaborationRequest not found')
+    collaboration = crud.collaboration.get(db=db, id=collaboration_request.collaboration_id)
+    if not crud.user.is_superuser(current_user) and (collaboration.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail='Not enough permissions')
+    collaboration_request = crud.collaboration_request.accept(db=db, collaboration_request=collaboration_request)
+    return collaboration_request
+
+
+@router.put('/request/{collaboration_request_id}/reject', response_model=schemas.CollaborationRequest)
+def reject_collaboration_request(
+    *,
+    db: Session = Depends(deps.get_db),
+    collaboration_request_id: int,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Reject a CollaborationRequest.
+    """
+    collaboration_request = crud.collaboration_request.get(db=db, id=collaboration_request_id)
+    if not collaboration_request:
+        raise HTTPException(status_code=404, detail='CollaborationRequest not found')
+    collaboration = crud.collaboration.get(db=db, id=collaboration_request.collaboration_id)
+    if not crud.user.is_superuser(current_user) and (collaboration.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail='Not enough permissions')
+    collaboration_request = crud.collaboration_request.reject(db=db, collaboration_request=collaboration_request)
+    return collaboration_request
