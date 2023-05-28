@@ -39,16 +39,5 @@ class CRUDMessage(CRUDBase[Message, MessageCreate, MessageUpdate]):
             .all()
         )
     
-    def get_latest_received_message(
-        self, db: Session, *, receiver_id: int, sender_id: int
-    ) -> Message:
-        return (
-            db.query(self.model)
-            .filter(Message.receiver_id == receiver_id)
-            .filter(Message.sender_id == sender_id)
-            .order_by(Message.created_at.desc())
-            .first()
-        )
-
 
 message = CRUDMessage(Message)
