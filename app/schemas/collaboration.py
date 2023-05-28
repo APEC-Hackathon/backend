@@ -1,12 +1,13 @@
 from typing import Optional 
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 class CollaborationBase(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     source_id: Optional[int] = None
+    image_url: Optional[HttpUrl] = None
 
 
 class CollaborationCreate(CollaborationBase):

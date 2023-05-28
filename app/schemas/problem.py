@@ -1,13 +1,14 @@
 from typing import Optional 
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 class ProblemBase(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     bid_deadline: Optional[datetime] = None
+    image_url: Optional[HttpUrl] = None
 
 
 class ProblemCreate(ProblemBase):

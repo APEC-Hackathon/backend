@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, HttpUrl
 
 
 # Shared properties
@@ -13,6 +13,7 @@ class UserBase(BaseModel):
     organization_description: Optional[str] = None
     organization_rating: Optional[float] = None
     country: Optional[str] = None
+    avatar_url: Optional[HttpUrl] = None
 
 
 class UserCreate(UserBase):

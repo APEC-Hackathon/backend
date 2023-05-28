@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
 from app.api import deps
+from app.utils.images import get_default_collaboration_img_url
 
 router = APIRouter()
 
@@ -19,8 +20,9 @@ def create_collaboration(
     """
     Create new collaboration.
     """
+    if collaboration_in.image_url is None:
+        collaboration_in.image_url = get_default_collaboration_img_url()
     if collaboration_in.source_id is not None:
-        print('Yes')
         source_problem = crud.problem.get(db=db, id=collaboration_in.source_id)
         if not source_problem:
             raise HTTPException(status_code=404, detail='Source problem not found')

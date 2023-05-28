@@ -192,3 +192,4 @@ pyrightconfig.json
 
 *.db
 app/utils/artifacts/*
+alembic/versions/*

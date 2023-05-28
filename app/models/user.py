@@ -13,6 +13,7 @@ class User(Base):
     is_superuser = Column(Boolean, default=False)
     prefered_language = Column(String, nullable=True)
     country = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
 
     # organization fields
     organization_name = Column(String, nullable=True)

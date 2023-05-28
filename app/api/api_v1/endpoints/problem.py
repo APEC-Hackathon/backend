@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
 from app.api import deps
+from app.utils.images import get_default_problem_img_url
 
 router = APIRouter()
 
@@ -19,10 +20,12 @@ def create_problem(
     """
     Create new Problem.
     """
-    Problem = crud.problem.create_with_owner(
+    if problem_in.image_url is None:
+        problem_in.image_url = get_default_problem_img_url()
+    problem = crud.problem.create_with_owner(
         db=db, obj_in=problem_in, owner_id=current_user.id
     )
-    return Problem
+    return problem
 
 
 @router.get('/', response_model=List[schemas.Problem])
@@ -35,22 +38,22 @@ def read_my_problems(
     """
     Retrieve my Problems.
     """
-    Problems = crud.problem.get_multi_by_owner(
+    problems = crud.problem.get_multi_by_owner(
         db=db, owner_id=current_user.id, skip=skip, limit=limit
     )
-    return Problems
+    return problems
 
 
 @router.get('/{problem_id}', response_model=schemas.Problem)
 def read_problem_by_id(
-    Problem_id: int,
+    problem_id: int,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Get a Problem by ID.
     """
-    problem = crud.problem.get(db=db, id=Problem_id)
+    problem = crud.problem.get(db=db, id=problem_id)
     if not problem:
         raise HTTPException(status_code=404, detail='Problem not found')
     return problem
@@ -67,13 +70,13 @@ def update_my_Problem(
     """
     Update a Problem.
     """
-    Problem = crud.Problem.get(db=db, id=problem_id)
-    if not Problem:
+    problem = crud.Problem.get(db=db, id=problem_id)
+    if not problem:
         raise HTTPException(status_code=404, detail='Problem not found')
-    if not crud.user.is_superuser(current_user) and (Problem.owner_id != current_user.id):
+    if not crud.user.is_superuser(current_user) and (problem.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
-    Problem = crud.Problem.update(db=db, db_obj=Problem, obj_in=problem_in)
-    return Problem
+    problem = crud.Problem.update(db=db, db_obj=problem, obj_in=problem_in)
+    return problem
 
 
 @router.delete('/{problem_id}', response_model=schemas.Problem)
@@ -109,6 +112,7 @@ def read_all_problems(
         db=db, skip=skip, limit=limit
     )
     return problems
+
 
 @router.post('/{problem_id}/bid/', response_model=schemas.ProblemBid)
 def create_problem_bid(

@@ -11,6 +11,7 @@ class Problem(Base):
     owner_id = Column(Integer, ForeignKey("user.id"))
     owner = relationship("User", back_populates="problems")
     bid_deadline = Column(DateTime, nullable=True)
+    image_url = Column(String, nullable=True)
 
     alliances = relationship("Collaboration", back_populates="source")
     bids = relationship("ProblemBid", back_populates="problem")
