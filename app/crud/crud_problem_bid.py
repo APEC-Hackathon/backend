@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
-from app.models.problem import ProblemBid
+from app.models.problem_bid import ProblemBid
 from app.schemas.problem_bid import ProblemBidCreate, ProblemBidUpdate
 
 

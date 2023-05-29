@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
-from app.models.collaboration import CollaborationRequest
+from app.models.collaboration_request import CollaborationRequest
 from app.schemas.collaboration_request import CollaborationRequestCreate, CollaborationRequestUpdate
 
 
