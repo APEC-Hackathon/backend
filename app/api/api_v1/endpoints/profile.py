@@ -1,6 +1,8 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
-from fastapi import APIRouter, Depends, Body, HTTPException
+from pydantic import EmailStr, HttpUrl
+
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session  
 
@@ -23,40 +25,17 @@ def read_users_me(current_user: User = Depends(deps.get_current_user)) -> Any:
 def update_user_me(
     *,
     db: Session = Depends(deps.get_db),
-    full_name: str = Body(None),
-    email: str = Body(None),
-    password: str = Body(None),
-    organization_name: str = Body(None),
-    organization_description: str = Body(None),
-    prefered_language: str = Body(None),
-    country: str = Body(None),
-    avatar_url: str = Body(None),
+    user_in: schemas.UserUpdate,
     current_user: User = Depends(deps.get_current_user),
 ):
     """
     Update current user
     """
-    current_user_data = jsonable_encoder(current_user)
-    user_in = schemas.UserUpdate(**current_user_data)
-    if email is not None:
-        user_in.email = email
-        if crud.user.get_by_email(db, email=email):
+    if user_in.email is not None and user_in.email != current_user.email:
+        if crud.user.get_by_email(db, email=user_in.email):
             raise HTTPException(
-                status_code=400,
-                detail='The user with this email already exists in the system.',
+                status_code=400, detail='The user with this username already exists'
             )
-    attributes = {
-        "full_name": full_name,
-        "password": password,
-        "organization_name": organization_name,
-        "organization_description": organization_description,
-        "prefered_language": prefered_language,
-        "country": country,
-        "avatar_url": avatar_url,
-    }
-    for attr, value in attributes.items():
-        if value is not None:
-            setattr(user_in, attr, value)
     user = crud.user.update(db, db_obj=current_user, obj_in=user_in)
     return user
 

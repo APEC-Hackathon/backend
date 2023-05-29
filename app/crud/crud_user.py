@@ -38,15 +38,16 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def update(
         self, db: Session, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
     ) -> User: 
+        print(1)
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
-        if update_data["password"]:
+        if 'password' in update_data:
             hashed_password = get_password_hash(update_data['password'])
             del update_data['password']
             update_data['hashed_password'] = hashed_password
-        if update_data['prefered_language'] is None or not is_supported_language(update_data['prefered_language']):
+        if 'prefered_language' not in update_data or not is_supported_language(update_data['prefered_language']):
             update_data['prefered_language'] = "en"
         return super().update(db, db_obj=db_obj, obj_in=update_data)
     
