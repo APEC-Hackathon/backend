@@ -10,10 +10,10 @@ DEFAULT_PROBLEM_IMG_URLS = [
 ]
 
 DEFAULT_COLLABORATION_IMG_URLS = [
-    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-1.png'
-    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-2.png'
-    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-3.png'
-    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-4.png'
+    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-1.png',
+    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-2.png',
+    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-3.png',
+    'https://vgxwzvhdgqdrcezoxblv.supabase.co/storage/v1/object/public/posts/collaborations/collab-4.png',
 ]
 
 def get_default_ava_url():
