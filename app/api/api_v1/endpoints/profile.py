@@ -30,6 +30,7 @@ def update_user_me(
     organization_description: str = Body(None),
     prefered_language: str = Body(None),
     country: str = Body(None),
+    avatar_url: str = Body(None),
     current_user: User = Depends(deps.get_current_user),
 ):
     """
@@ -44,18 +45,18 @@ def update_user_me(
                 status_code=400,
                 detail='The user with this email already exists in the system.',
             )
-    if full_name is not None:
-        user_in.full_name = full_name
-    if password is not None:
-        user_in.password = password
-    if organization_name is not None:
-        user_in.organization_name = organization_name
-    if organization_description is not None:
-        user_in.organization_description = organization_description
-    if prefered_language is not None:
-        user_in.prefered_language = prefered_language
-    if country is not None:
-        user_in.country = country
+    attributes = {
+        "full_name": full_name,
+        "password": password,
+        "organization_name": organization_name,
+        "organization_description": organization_description,
+        "prefered_language": prefered_language,
+        "country": country,
+        "avatar_url": avatar_url,
+    }
+    for attr, value in attributes.items():
+        if value is not None:
+            setattr(user_in, attr, value)
     user = crud.user.update(db, db_obj=current_user, obj_in=user_in)
     return user
 
@@ -70,7 +71,7 @@ def read_user_by_id(
     Get a specific user by id.
     """
     user = crud.user.get(db, id=user_id)
-    if not user:
+    if not user or user.is_superuser:
         raise HTTPException(status_code=404, detail='User not found')
     return user
 
@@ -81,7 +82,7 @@ def get_all_user(
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Get all users
+    Get all users that are not superusers.
     """
     users = crud.user.get_multi(db)
     return [user for user in users if user.id != current_user.id and user.is_superuser == False]

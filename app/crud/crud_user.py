@@ -46,6 +46,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             hashed_password = get_password_hash(update_data['password'])
             del update_data['password']
             update_data['hashed_password'] = hashed_password
+        if update_data['prefered_language'] is None or not is_supported_language(update_data['prefered_language']):
+            update_data['prefered_language'] = "en"
         return super().update(db, db_obj=db_obj, obj_in=update_data)
     
     def authenticate(self, db: Session, *, email: str, password: str) -> Optional[User]:
