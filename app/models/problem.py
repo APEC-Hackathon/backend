@@ -16,5 +16,5 @@ class Problem(Base):
     alliances = relationship("Collaboration", back_populates="source")
     bids = relationship("ProblemBid", back_populates="problem")
 
-    bid_winner_id = Column(Integer)
+    bid_winner_id = Column(Integer, nullable=True) # check on the endpoint side, don't make it foreign key to avoid circular dependency
     

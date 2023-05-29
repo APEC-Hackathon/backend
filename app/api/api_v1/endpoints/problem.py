@@ -59,7 +59,7 @@ def read_problem_by_id(
     return problem
 
 
-@router.put('/{Problem_id}', response_model=schemas.Problem)
+@router.put('/{problem_id}', response_model=schemas.Problem)
 def update_my_Problem(
     *,
     db: Session = Depends(deps.get_db),
@@ -225,3 +225,25 @@ def read_all_bids_for_a_problem(
         db=db, problem_id=problem_id
     )
     return problem_bids
+
+@router.post('/{problem_id}/announce', response_model=schemas.Problem)
+def choose_winner_for_problem(
+    *,
+    db: Session = Depends(deps.get_db),
+    problem_id: int,
+    problem_bid_winner_id: int,
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Choose winner for a Problem.
+    """
+    problem = crud.problem.get(db=db, id=problem_id)
+    if not problem:
+        raise HTTPException(status_code=404, detail='Problem not found')
+    if not crud.user.is_superuser(current_user) and (problem.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail='Not enough permissions')
+    problem_bid_winner = crud.problem_bid.get(db=db, id=problem_bid_winner_id)
+    if not problem_bid_winner or problem_bid_winner.problem_id != problem_id:
+        raise HTTPException(status_code=404, detail="ProblemBid not found or it's not for this Problem")
+    problem = crud.problem.update(db=db, db_obj=problem, obj_in=schemas.ProblemUpdate(bid_winner_id=problem_bid_winner_id))
+    return problem 
