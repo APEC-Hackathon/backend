@@ -134,7 +134,7 @@ def create_collaboration_request(
     if not collaboration:
         raise HTTPException(status_code=404, detail='Collaboration not found')
     collaboration_request = crud.collaboration_request.create_with_requester(
-        db=db, obj_in=collaboration_request_in, owner_id=current_user.id,
+        db=db, obj_in=collaboration_request_in, requester_id=current_user.id,
     )
     return collaboration_request
 
@@ -168,7 +168,7 @@ def update_my_collaboration_request(
     collaboration_request = crud.collaboration_request.get(db=db, id=collaboration_request_id)
     if not collaboration_request:
         raise HTTPException(status_code=404, detail='CollaborationRequest not found')
-    if not crud.user.is_superuser(current_user) and (collaboration_request.owner_id != current_user.id):
+    if not crud.user.is_superuser(current_user) and (collaboration_request.requester_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
     collaboration_request = crud.collaboration_request.update(db=db, db_obj=collaboration_request, obj_in=collaboration_request_in)
     return collaboration_request
@@ -187,7 +187,7 @@ def delete_collaboration_request(
     collaboration_request = crud.collaboration_request.get(db=db, id=collaboration_request_id)
     if not collaboration_request:
         raise HTTPException(status_code=404, detail='CollaborationRequest not found')
-    if not crud.user.is_superuser(current_user) and (collaboration_request.owner_id != current_user.id):
+    if not crud.user.is_superuser(current_user) and (collaboration_request.requester_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
     collaboration_request = crud.collaboration_request.remove(db=db, id=collaboration_request_id)
     return collaboration_request
@@ -204,7 +204,7 @@ def read_my_collaboration_requests(
     Retrieve my CollaborationRequests.
     """
     collaboration_requests = crud.collaboration_request.get_multi_by_requester(
-        db=db, owner_id=current_user.id, skip=skip, limit=limit
+        db=db, requester_id=current_user.id, skip=skip, limit=limit
     )
     return collaboration_requests
 
@@ -240,7 +240,7 @@ def accept_collaboration_request(
     collaboration = crud.collaboration.get(db=db, id=collaboration_request.collaboration_id)
     if not crud.user.is_superuser(current_user) and (collaboration.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
-    collaboration_request = crud.collaboration_request.accept(db=db, collaboration_request=collaboration_request)
+    collaboration_request = crud.collaboration_request.accept(db=db, collaboration_request_id=collaboration_request_id)
     return collaboration_request
 
 
@@ -260,5 +260,5 @@ def reject_collaboration_request(
     collaboration = crud.collaboration.get(db=db, id=collaboration_request.collaboration_id)
     if not crud.user.is_superuser(current_user) and (collaboration.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail='Not enough permissions')
-    collaboration_request = crud.collaboration_request.reject(db=db, collaboration_request=collaboration_request)
+    collaboration_request = crud.collaboration_request.reject(db=db, collaboration_request_id=collaboration_request_id)
     return collaboration_request

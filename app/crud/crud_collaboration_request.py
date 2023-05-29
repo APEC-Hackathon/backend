@@ -10,21 +10,21 @@ from app.schemas.collaboration_request import CollaborationRequestCreate, Collab
 
 class CRUDCollaborationBid(CRUDBase[CollaborationRequest, CollaborationRequestCreate, CollaborationRequestUpdate]):
     def create_with_requester(
-        self, db: Session, *, obj_in: CollaborationRequestCreate, bidder_id: int
+        self, db: Session, *, obj_in: CollaborationRequestCreate, requester_id: int
     ) -> CollaborationRequest:
         obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data, bidder_id=bidder_id)
+        db_obj = self.model(**obj_in_data, requester_id=requester_id)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
     
     def get_multi_by_requester(
-        self, db: Session, *, bidder_id: int, skip: int = 0, limit: int = 100
+        self, db: Session, *, requester_id: int, skip: int = 0, limit: int = 100
     ) -> List[CollaborationRequest]:
         return (
             db.query(self.model)
-            .filter(CollaborationRequest.bidder_id == bidder_id)
+            .filter(CollaborationRequest.requester_id == requester_id)
             .offset(skip)
             .limit(limit)
             .all()
